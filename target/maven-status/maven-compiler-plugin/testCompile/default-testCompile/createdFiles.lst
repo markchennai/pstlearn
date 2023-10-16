@@ -1,0 +1,4 @@
+com\pst\learncrew\controllers\ProfilesControllerTest.class
+com\pst\learncrew\dao\DefaultProfilesDaoTest.class
+com\pst\learncrew\controllers\exceptions\ProfilesExceptionHandlerTest.class
+com\pst\learncrew\business\DefaultProfilesBusinessTest.class

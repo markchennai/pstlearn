@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DefaultProfilesDao.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pstlearn</a> &gt; <a href="index.source.html" class="el_package">com.pst.learncrew.dao</a> &gt; <span class="el_source">DefaultProfilesDao.java</span></div><h1>DefaultProfilesDao.java</h1><pre class="source lang-java linenums">package com.pst.learncrew.dao;
+
+import com.pst.learncrew.dto.ProfileDto;
+import com.pst.learncrew.enums.AgreementTypeEnum;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+@Repository
+<span class="fc" id="L16">public class DefaultProfilesDao implements ProfilesDao {</span>
+  private static final String GET_PROFILES = &quot;select * from profiles&quot;;
+  private static final String CREATE_AGREEMENT_PROFILE = &quot;&lt;----- PLACE YOUR SQL QUERY HERE -----&gt;&quot;;
+  private static final String GET_PROFILE_BY_ID = &quot;&lt;----- PLACE YOUR SQL QUERY HERE -----&gt;&quot;;
+  private static final String UPDATE_PROFILE = &quot;&lt;----- PLACE YOUR SQL QUERY HERE -----&gt;&quot;;
+  private static final String DELETE_PROFILE = &quot;&lt;----- PLACE YOUR SQL QUERY HERE -----&gt;&quot;;
+
+  @Autowired private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+  @Override
+  public List&lt;ProfileDto&gt; getProfiles(
+      AgreementTypeEnum agreementType, Boolean excludeRestDaysFlag, String commentId) {
+<span class="fc" id="L28">    Map&lt;String, Object&gt; parameters = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L29">    return namedParameterJdbcTemplate.query(GET_PROFILES, parameters, new ProfilesRowMapper());</span>
+  }
+
+  @Override
+  public ProfileDto createAgreementProfile(ProfileDto profileDto) {
+<span class="fc" id="L34">    Map&lt;String, Object&gt; parameters = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L35">    namedParameterJdbcTemplate.update(CREATE_AGREEMENT_PROFILE, parameters);</span>
+    // TODO- replace with right mapping logic below
+<span class="fc" id="L37">    ProfileDto result = new ProfileDto();</span>
+<span class="fc" id="L38">    return result;</span>
+  }
+
+  @Override
+  public ProfileDto getProfileById(Integer oId) {
+<span class="fc" id="L43">    Map&lt;String, Object&gt; parameters = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L44">    return namedParameterJdbcTemplate.queryForObject(</span>
+        GET_PROFILE_BY_ID, parameters, new ProfilesRowMapper());
+  }
+
+  @Override
+  public ProfileDto updateProfile(Integer oId, ProfileDto profileDto) {
+<span class="fc" id="L50">    Map&lt;String, Object&gt; parameters = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L51">    namedParameterJdbcTemplate.update(UPDATE_PROFILE, parameters);</span>
+    // TODO- replace with right mapping logic below
+<span class="fc" id="L53">    ProfileDto result = new ProfileDto();</span>
+<span class="fc" id="L54">    return result;</span>
+  }
+
+  @Override
+  public void deleteProfile(Integer oId) {
+<span class="fc" id="L59">    Map&lt;String, Object&gt; parameters = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L60">    namedParameterJdbcTemplate.update(DELETE_PROFILE, parameters);</span>
+<span class="fc" id="L61">  }</span>
+
+  private static class ProfilesRowMapper implements RowMapper&lt;ProfileDto&gt; {
+    @Override
+    public ProfileDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+<span class="nc" id="L66">      ProfileDto profileDto = new ProfileDto();</span>
+
+<span class="nc" id="L68">      return profileDto;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

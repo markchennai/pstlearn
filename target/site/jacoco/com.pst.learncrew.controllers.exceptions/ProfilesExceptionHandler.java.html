@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProfilesExceptionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pstlearn</a> &gt; <a href="index.source.html" class="el_package">com.pst.learncrew.controllers.exceptions</a> &gt; <span class="el_source">ProfilesExceptionHandler.java</span></div><h1>ProfilesExceptionHandler.java</h1><pre class="source lang-java linenums">package com.pst.learncrew.controllers.exceptions;
+
+import brave.Span;
+import brave.Tracer;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.pst.learncrew.models.Error;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+@ControllerAdvice
+<span class="fc" id="L25">public class ProfilesExceptionHandler extends ResponseEntityExceptionHandler {</span>
+
+  @Autowired private Tracer tracer;
+
+  @Override
+  protected ResponseEntity&lt;Object&gt; handleMethodArgumentNotValid(
+      MethodArgumentNotValidException ex,
+      HttpHeaders headers,
+      HttpStatusCode status,
+      WebRequest request) {
+
+<span class="fc" id="L36">    List&lt;Error&gt; errorList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L37">    Locale locale = LocaleContextHolder.getLocale();</span>
+<span class="fc" id="L38">    String traceIdString = null;</span>
+<span class="fc" id="L39">    Span span = tracer.currentSpan();</span>
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">    if (span != null) {</span>
+<span class="nc" id="L41">      traceIdString = span.context().traceIdString();</span>
+    }
+<span class="fc bfc" id="L43" title="All 2 branches covered.">    for (FieldError err : ex.getFieldErrors()) {</span>
+<span class="fc" id="L44">      Error error = new Error();</span>
+<span class="fc" id="L45">      error.setId(traceIdString);</span>
+<span class="fc" id="L46">      error.setCode(&quot;ERR400&quot;);</span>
+<span class="fc" id="L47">      error.setTitle(getMessageSource().getMessage(&quot;ERR400_REQUIRED.TITLE&quot;, null, locale));</span>
+<span class="fc" id="L48">      error.setDetail(</span>
+<span class="fc" id="L49">          getMessageSource()</span>
+<span class="fc" id="L50">              .getMessage(err.getDefaultMessage(), new Object[] {err.getField()}, locale));</span>
+<span class="fc" id="L51">      errorList.add(error);</span>
+<span class="fc" id="L52">    }</span>
+<span class="fc" id="L53">    return new ResponseEntity&lt;&gt;(errorList, headers, HttpStatus.BAD_REQUEST);</span>
+  }
+
+  @Override
+  protected ResponseEntity&lt;Object&gt; handleHttpMessageNotReadable(
+      HttpMessageNotReadableException ex,
+      HttpHeaders headers,
+      HttpStatusCode status,
+      WebRequest request) {
+<span class="fc" id="L62">    Locale locale = LocaleContextHolder.getLocale();</span>
+<span class="fc" id="L63">    String traceIdString = null;</span>
+<span class="fc" id="L64">    Span span = tracer.currentSpan();</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">    if (span != null) {</span>
+<span class="nc" id="L66">      traceIdString = span.context().traceIdString();</span>
+    }
+<span class="fc" id="L68">    List&lt;Error&gt; errorList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L69">    Error error = new Error();</span>
+<span class="fc" id="L70">    error.setId(traceIdString);</span>
+<span class="fc" id="L71">    error.setCode(&quot;ERR400&quot;);</span>
+<span class="fc" id="L72">    error.setTitle(getMessageSource().getMessage(&quot;ERR400_ENUM.TITLE&quot;, new Object[] {}, locale));</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">    if (ex.getCause() instanceof InvalidFormatException) {</span>
+<span class="fc" id="L74">      InvalidFormatException ifx = (InvalidFormatException) ex.getCause();</span>
+<span class="pc bpc" id="L75" title="3 of 4 branches missed.">      if (ifx.getTargetType() != null &amp;&amp; ifx.getTargetType().isEnum()) {</span>
+<span class="nc" id="L76">        String fieldName = ifx.getPath().get(ifx.getPath().size() - 1).getFieldName();</span>
+<span class="nc" id="L77">        error.setDetail(</span>
+<span class="nc" id="L78">            getMessageSource().getMessage(&quot;ERR400_ENUM&quot;, new Object[] {fieldName}, locale));</span>
+      }
+<span class="fc bfc" id="L80" title="All 2 branches covered.">    } else if (ex.getCause() instanceof MismatchedInputException) {</span>
+<span class="fc" id="L81">      MismatchedInputException mix = (MismatchedInputException) ex.getCause();</span>
+<span class="pc bpc" id="L82" title="3 of 4 branches missed.">      if (mix.getTargetType() != null &amp;&amp; mix.getTargetType().toGenericString().contains(&quot;List&quot;)) {</span>
+<span class="nc" id="L83">        String fieldName = mix.getPath().get(mix.getPath().size() - 1).getFieldName();</span>
+<span class="nc" id="L84">        error.setDetail(</span>
+<span class="nc" id="L85">            getMessageSource().getMessage(&quot;ERR400_LIST&quot;, new Object[] {fieldName}, locale));</span>
+      }
+<span class="fc" id="L87">    } else {</span>
+<span class="fc" id="L88">      error.setDetail(</span>
+<span class="fc" id="L89">          getMessageSource().getMessage(&quot;ERR400_INVALID&quot;, new Object[] {&quot;REQ_BODY&quot;}, locale));</span>
+    }
+
+<span class="fc" id="L92">    errorList.add(error);</span>
+<span class="fc" id="L93">    return new ResponseEntity&lt;&gt;(errorList, headers, HttpStatus.BAD_REQUEST);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
