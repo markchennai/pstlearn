@@ -1,0 +1,517 @@
+openapi: '3.1.0'
+info:
+  version: '1.0.0'
+  title: 'Profiles'
+  description: Guarantee Agreement Profile
+  contact:
+    email: apiteam@pstechnology.com
+servers:
+  - description: CrewPro/Timekeeping Deployment Units
+    url: http://localhost:8080/crewpro/timekeeping/guarantee
+tags:
+  - name: profiles
+    description: Manage the profiles for guarantee agreement
+
+paths:
+  /profiles:
+    get:
+      tags:
+        - profiles
+      summary: Get all profiles
+      parameters:
+        - $ref: '#/components/parameters/agreementType'
+        - $ref: '#/components/parameters/excludeRestDaysFlag'
+        - $ref: '#/components/parameters/commentId'
+      responses:
+        '200':
+          description: The profile corresponding to the provided `id`
+          headers:
+            Correlation-Key:
+              $ref: '#/components/headers/Correlation-Key'
+            Location:
+              $ref: '#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Profile'
+              examples:
+                profileSuccess:
+                  $ref: '#/components/examples/profileSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RequestLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServiceError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    post:
+      tags:
+        - profiles
+      summary: Create an agreement profile
+      description: Add a new agreement profile
+      operationId: createAgreementProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+            examples:
+              profileSuccess:
+                $ref: '#/components/examples/profileCreate'
+        description: Created Profile object
+        required: true
+
+      responses:
+        '201':
+          description: Created
+          headers:
+            Correlation-Key:
+              $ref: '#/components/headers/Correlation-Key'
+            Location:
+              $ref: '#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RequestLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServiceError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /profiles/{oId}:
+    get:
+      tags:
+        - profiles
+      summary: Retrieve profile by id
+      description: Retrieve profile by using the given oid
+      operationId: getProfileById
+      parameters:
+        - name: oId
+          in: path
+          required: true
+          explode: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          headers:
+            Correlation-Key:
+              $ref: '#/components/headers/Correlation-Key'
+            Location:
+              $ref: '#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+              examples:
+                profileSuccess:
+                  $ref: '#/components/examples/profileOne'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RequestLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServiceError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    put:
+      tags:
+        - profiles
+      summary: Update a Profile
+      description: Update an existing Profile by referencing the oId
+      operationId: updateProfile
+      parameters:
+        - name: oId
+          in: path
+          description: The oId of the requested Profile resource
+          required: true
+          explode: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+        description: Created profile
+        required: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            Correlation-Key:
+              $ref: '#/components/headers/Correlation-Key'
+            Location:
+              $ref: '#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RequestLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServiceError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    delete:
+      tags:
+        - profiles
+      summary: Delete a Profile
+      description: Delete an existing Profile by referencing the id
+      operationId: deleteProfile
+      parameters:
+        - name: oId
+          in: path
+          description: The uniqe ID of the requested profile resource
+          required: true
+          explode: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: No Content
+          headers:
+            Correlation-Key:
+              $ref: '#/components/headers/Correlation-Key'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RequestLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServiceError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+components:
+  schemas:
+    Agreement:
+      type: object
+      required:
+        - id
+        - name
+        - type
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+            - REGULAR
+            - WORK_REST
+            - RESERVE
+            - RETENTION
+            - TRAINEE
+        accountingProfileOverride:
+          type: string
+        rate:
+          type: string
+          enum:
+            - FIXED_AMOUNT
+            - PERCENT_OF_BASIC_DAILY_RATE
+        period:
+          type: string
+          enum:
+            - MONTHLY
+            - CLOSEOUT_SCHEDULE
+            - WEEKLY
+            - DAILY
+    Comment:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: unique id for comment
+        text:
+          type: string
+          description: comment text
+        message:
+          type: string
+          description: message about comment
+    Reduction:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        excludeRestDaysFlag:
+          type: boolean
+        excludeAllEarningsFlag:
+          type: boolean
+        unavailableExceedFlag:
+          type: boolean
+    Profile:
+      type: object
+      required:
+        - profileId
+        - description
+      properties:
+        oId:
+          description: Unique number assigned to profile
+          type: integer
+        profileId:
+          description: The unique identifier of a profile
+          type: string
+        description:
+          description: Description of profile
+          type: string
+        createdTimestamp:
+          type: string
+          description: Timestamp when profile was created
+        createdUserId:
+          type: string
+          description: User who created this profile
+        lastUpdatedTimestamp:
+          type: string
+          description: Timestamp when profile was last updated
+        lastUpdatedUserId:
+          type: string
+          description: Last User who updated this profile
+        comment:
+          $ref: '#/components/schemas/Comment'
+        agreement:
+          $ref: '#/components/schemas/Agreement'
+        reduction:
+          $ref: '#/components/schemas/Reduction'
+    Error:
+      type: object
+      required:
+        - code
+        - title
+      properties:
+        id:
+          type: string
+          examples: [8eaeac83-edd8-4977-880d-053b42e827e0]
+          description: something
+        title:
+          type: string
+          examples: ['User First Name cannot be empty']
+          description: >-
+            A short, human-readable summary of the problem
+        code:
+          type: string
+          examples: [XB400]
+        detail:
+          type: string
+          examples: [Missing mandatory fields]
+          description: something
+    Errors:
+      type: array
+      items:
+        $ref: '#/components/schemas/Error'
+
+  requestBodies:
+    Profile:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Profile'
+      description: Guarantee Profile
+      required: true
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Errors'
+    Unauthorized:
+      description: Unauthorized Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Errors'
+    Forbidden:
+      description: Forbidden Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Errors'
+    NotFound:
+      description: Requested Item Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Errors'
+    RequestLimitExceeded:
+      description: Request Limit Exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Errors'
+    InternalServiceError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Errors'
+    ServiceUnavailable:
+      description: Service Unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Errors'
+
+  headers:
+    Correlation-Key:
+      description: >-
+        A system generated identifier for this API Call that can be used as a
+        reference for troubleshooting.
+      required: true
+      schema:
+        type: string
+    Location:
+      description: >-
+        Indicates where the resource can be found. Endpoints typically return
+        this value relative to their URL scheme.
+      required: true
+      schema:
+        type: string
+  parameters:
+    agreementType:
+      name: agreementType
+      in: query
+      description: filter the profile list by agreement type
+      required: false
+      explode: true
+      schema:
+        type: string
+        enum:
+          - REGULAR
+          - WORK_REST
+          - RESERVE
+          - RETENTION
+          - TRAINEE
+    commentId:
+      name: commentId
+      in: query
+      description: >-
+        filter the profiles collection by given comment id
+      required: false
+      explode: true
+      schema:
+        type: string
+    excludeRestDaysFlag:
+      name: excludeRestDaysFlag
+      in: query
+      description: >-
+        filter the profiles collection by exclude Rest days flag value
+      required: false
+      explode: true
+      schema:
+        type: boolean
+  examples:
+    profileSuccess:
+      summary: profile example
+      value: >-
+        [{
+          "oId" : 123,
+          "profileId" : "1B PAY PERIOD Z",
+          "description: : "PST TK BA",
+          "createdTimestamp": "",
+          "createdUserId": "",
+          "lastUpdatedTimestamp": "",
+          "lastUpdatedUserId": "",
+          "agreement": {
+            "id": "2124",
+            "type": "TRAINEE",
+            "accountingProfileOverride": "1Q_YS_AP_TEST",
+            "rate": "FIXED_AMOUNT",
+            "period": "DAILY"
+          },
+          "reduction": {
+            "id": "543",
+            "excludeRestDaysFlag": true
+          },
+          "comment": {
+            "id" : "34556"
+            "text": "some comment"
+            "message": "message"
+          }
+        }]
+    profileOne:
+      summary: profile example
+      value: >-
+        {
+          "oId" : 123,
+          "profileId" : "1B PAY PERIOD Z",
+          "description: : "PST TK BA",
+          "createdTimestamp": "",
+          "createdUserId": "",
+          "lastUpdatedTimestamp": "",
+          "lastUpdatedUserId": "",
+          "agreement": {
+            "id": "2124",
+            "type": "TRAINEE",
+            "accountingProfileOverride": "1Q_YS_AP_TEST",
+            "rate": "FIXED_AMOUNT",
+            "period": "DAILY"
+          },
+          "reduction": {
+            "id": "543",
+            "excludeRestDaysFlag": true
+          },
+          "comment": {
+            "id" : "34556",
+            "text": "some comment",
+            "message": "message"
+          }
+        }
+    profileCreate:
+      summary: create profile request
+      value: >-
+        {
+          "agreement": {
+            "type": "TRAINEE",
+            "accountingProfileOverride": "1Q_YS_AP_TEST",
+            "rate": "FIXED_AMOUNT",
+            "period": "DAILY"
+          },
+          "reduction": {
+            "excludeRestDaysFlag": true
+          },
+          "comment": {
+            "text": "some comment",
+            "message": "message"
+          }
+        }
