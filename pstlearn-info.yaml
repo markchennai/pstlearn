@@ -2,9 +2,13 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: pstlearn
+  description: crewpro base scaffolding
+  tags:
+    - java
+    - springboot
   annotations:
     github.com/project-slug: markchennai/pstlearn
 spec:
-  type: other
+  type: service
   lifecycle: unknown
   owner: markchennai
